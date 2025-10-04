@@ -23,4 +23,11 @@ $(TARGET): $(SRC)
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all clean preprocess
+test:
+	$(CC) $(CFLAGS) test.c -o $(BUILD_DIR)/test
+	$(BUILD_DIR)/test
+
+preprocess_test:
+	$(CC) -E $(CFLAGS) test.c -o $(BUILD_DIR)/test.i
+
+.PHONY: all clean preprocess test
