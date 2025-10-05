@@ -1,6 +1,6 @@
 # sum.h
 
-sum.h is a A header-only library for generating and using tagged unions in c
+sum.h is a header-only library for generating and using tagged unions in c
 
 ## How to use
 
