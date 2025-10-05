@@ -2,7 +2,7 @@
 #define SUM_H
 
 // Utilities
-#define _NARGS_IMPL(A0, A1, A2, A3, N, ...) N
+#define _NARGS_IMPL(ElementTuple, A1, A2, A3, N, ...) N
 #define _NARGS(...) _NARGS_IMPL(__VA_ARGS__, 3, 2, 1, 0)
 
 #define _UNWRAP_IMPL(...) __VA_ARGS__
@@ -16,40 +16,42 @@
 #define _GET_NAME_IMPL(...) _GET_NAME_IMPL_2(__VA_ARGS__)
 #define _GET_NAME(Tuple) _GET_NAME_IMPL(_UNWRAP(Tuple))
 
-// TODO: Rename args so this isn't as confusing
-#define _EXPAND_ENUM_ARG_IMPL_2(Name, ElementName) Name##_##ElementName
-#define _EXPAND_ENUM_ARG_IMPL(Name, ElementName) _EXPAND_ENUM_ARG_IMPL_2(Name, ElementName)
-#define _EXPAND_ENUM_ARG(Name, Arg) _EXPAND_ENUM_ARG_IMPL(Name, _GET_NAME(Arg))
+#define _EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName) TypeName##_##ElementName
+#define _EXPAND_ENUM_ARG_IMPL(TypeName, ElementName) _EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName)
+#define _EXPAND_ENUM_ARG(TypeName, ElementTuple)                                                   \
+  _EXPAND_ENUM_ARG_IMPL(TypeName, _GET_NAME(ElementTuple))
 
 // TODO: use generic expand idiom thing to make recursive
-#define _EXPAND_ENUM_ARGS_0(Name, A0) _EXPAND_ENUM_ARG(Name, A0)
-#define _EXPAND_ENUM_ARGS_1(Name, A0, ...)                                                         \
-  _EXPAND_ENUM_ARG(Name, A0), _EXPAND_ENUM_ARGS_0(Name, __VA_ARGS__)
-#define _EXPAND_ENUM_ARGS_2(Name, A0, ...)                                                         \
-  _EXPAND_ENUM_ARG(Name, A0), _EXPAND_ENUM_ARGS_1(Name, __VA_ARGS__),
-#define _EXPAND_ENUM_ARGS_3(Name, A0, ...)                                                         \
-  _EXPAND_ENUM_ARG(Name, A0), _EXPAND_ENUM_ARGS_2(Name, __VA_ARGS__),
+#define _EXPAND_ENUM_ARGS_0(TypeName, ElementTuple) _EXPAND_ENUM_ARG(TypeName, ElementTuple)
+#define _EXPAND_ENUM_ARGS_1(TypeName, ElementTuple, ...)                                           \
+  _EXPAND_ENUM_ARG(TypeName, ElementTuple), _EXPAND_ENUM_ARGS_0(TypeName, __VA_ARGS__)
+#define _EXPAND_ENUM_ARGS_2(TypeName, ElementTuple, ...)                                           \
+  _EXPAND_ENUM_ARG(TypeName, ElementTuple), _EXPAND_ENUM_ARGS_1(TypeName, __VA_ARGS__),
+#define _EXPAND_ENUM_ARGS_3(TypeName, ElementTuple, ...)                                           \
+  _EXPAND_ENUM_ARG(TypeName, ElementTuple), _EXPAND_ENUM_ARGS_2(TypeName, __VA_ARGS__),
 
-#define _GENERATE_ENUM_FIELDS_DISPATCH(Name, Count, ...)                                           \
-  _EXPAND_ENUM_ARGS_##Count(Name, __VA_ARGS__)
-#define _GENERATE_ENUM_FIELDS_EXPAND_NARGS(Name, Count, ...)                                       \
-  _GENERATE_ENUM_FIELDS_DISPATCH(Name, Count, __VA_ARGS__)
-#define _GENERATE_ENUM_FIELDS_IMPL(Name, ...)                                                      \
-  _GENERATE_ENUM_FIELDS_EXPAND_NARGS(Name, _NARGS(__VA_ARGS__), __VA_ARGS__)
+#define _GENERATE_ENUM_FIELDS_DISPATCH(TypeName, Count, ...)                                       \
+  _EXPAND_ENUM_ARGS_##Count(TypeName, __VA_ARGS__)
+#define _GENERATE_ENUM_FIELDS_EXPAND_NARGS(TypeName, Count, ...)                                   \
+  _GENERATE_ENUM_FIELDS_DISPATCH(TypeName, Count, __VA_ARGS__)
+#define _GENERATE_ENUM_FIELDS_IMPL(TypeName, ...)                                                  \
+  _GENERATE_ENUM_FIELDS_EXPAND_NARGS(TypeName, _NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define _GENERATE_ENUM_FIELDS(Name, Args) _GENERATE_ENUM_FIELDS_IMPL(Name, _UNWRAP(Args))
+#define _GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                                             \
+  _GENERATE_ENUM_FIELDS_IMPL(TypeName, _UNWRAP(ElementTuples))
 #define _EXPAND_UNION_ARGS(...) __VA_ARGS__
 
-#define _MAKE_ENUM(Name, Args) typedef enum Name##_Kind{_GENERATE_ENUM_FIELDS(Name, Args)};
+#define _MAKE_ENUM(TypeName, ElementTuples)                                                        \
+  typedef enum TypeName##_Kind{_GENERATE_ENUM_FIELDS(TypeName, ElementTuples)};
 
-#define SUM(Name, Args)                                                                            \
-  _MAKE_ENUM(Name, Args)                                                                           \
-  typedef union Name##_Data {                                                                      \
-    _EXPAND_UNION_ARGS(Args)                                                                       \
+#define SUM(TypeName, ElementTuples)                                                               \
+  _MAKE_ENUM(TypeName, ElementTuples)                                                              \
+  typedef union TypeName##_Data {                                                                  \
+    _EXPAND_UNION_ARGS(ElementTuples)                                                              \
   };                                                                                               \
-  typedef struct Name {                                                                            \
-    enum Name##_Kind kind;                                                                         \
-    enum Name##_Data data;                                                                         \
+  typedef struct TypeName {                                                                        \
+    enum TypeName##_Kind kind;                                                                     \
+    enum TypeName##_Data data;                                                                     \
   }
 
 #endif
