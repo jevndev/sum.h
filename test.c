@@ -147,19 +147,19 @@ int main() {
   struct Diagnostics_Result result;
 
   TEST("make simple enum", _SUM_H__MAKE_ENUM, (Foo, ((int, i), (char, c))),
-       "typedef enum Foo_Kind{Foo_i, Foo_c};", &result);
+       "typedef enum Foo_Kind{Foo_i, Foo_c} Foo_Kind;", &result);
   TEST("make enum with one arg", _SUM_H__MAKE_ENUM, (Foo, ((int, i))),
-       "typedef enum Foo_Kind{Foo_i};", &result);
+       "typedef enum Foo_Kind{Foo_i} Foo_Kind;", &result);
 
   // This works, but it's kinda useless because we can't generate sum types like this
   TEST("make enum with inline nontrivial type", _SUM_H__MAKE_ENUM,
-       (Foo, ((typedef struct {int n}, i), (char, c))), "typedef enum Foo_Kind{Foo_i, Foo_c};",
-       &result);
+       (Foo, ((typedef struct {int n}, i), (char, c))),
+       "typedef enum Foo_Kind{Foo_i, Foo_c} Foo_Kind;", &result);
 
   TEST("make simple union", _SUM_H__MAKE_UNION, (Foo, ((int, i), (char, c))),
-       "typedef union Foo_Data { int i; char c; };", &result);
+       "typedef union Foo_Data { int i; char c; } Foo_Data;", &result);
   TEST("make union with one arg", _SUM_H__MAKE_UNION, (Foo, ((int, i))),
-       "typedef union Foo_Data { int i; };", &result);
+       "typedef union Foo_Data { int i; } Foo_Data;", &result);
 
   // TODO: make unions with inline nontrivial types supported.
   // We'd need to be smarter about where we put the type we pass to support this.
@@ -167,34 +167,36 @@ int main() {
   // That's a lot of work
   // Also putting typedefs out into the global scope on behalf of the user feels a little *too*
   // magic
-  TEST_UNSUPPORTED(
-      "make union with inline nontrivial type", _SUM_H__MAKE_UNION,
-      (Foo, ((typedef struct MyData{int n}, i), (char, c))),
-      "typedef struct MyData{int n}; typedef union Foo_Data { struct MyData i; char c; };",
-      &result);
+  TEST_UNSUPPORTED("make union with inline nontrivial type", _SUM_H__MAKE_UNION,
+                   (Foo, ((typedef struct MyData{int n}, i), (char, c))),
+                   "typedef struct MyData{int n} MyData; typedef union Foo_Data { struct MyData i; "
+                   "char c; } Foo_Data;",
+                   &result);
 
   TEST("make simple struct", _SUM_H__MAKE_STRUCT, (Foo, ((int, i), (char, c))),
-       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo", &result);
   TEST("make struct with one arg", _SUM_H__MAKE_STRUCT, (Foo, ((int, i))),
-       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo", &result);
   TEST("make struct with inline nontrivial type", _SUM_H__MAKE_STRUCT,
        (Foo, ((typedef struct {int n}, i), (char, c))),
-       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo", &result);
 
   TEST("make simple sum type", SUM, (Foo, ((int, i), (char, c))),
-       "typedef enum Foo_Kind { Foo_i, Foo_c }; typedef union Foo_Data { int i; char c; }; typedef "
-       "struct Foo { enum Foo_Kind kind; union Foo_Data data; }",
+       "typedef enum Foo_Kind { Foo_i, Foo_c } Foo_Kind; typedef union Foo_Data { int i; char c; } "
+       "Foo_Data; typedef "
+       "struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
        &result);
   TEST("make sum type with one arg", SUM, (Foo, ((int, i))),
-       "typedef enum Foo_Kind { Foo_i }; typedef union Foo_Data { int i; }; typedef struct Foo { "
-       "enum Foo_Kind kind; union Foo_Data data; }",
+       "typedef enum Foo_Kind { Foo_i } Foo_Kind; typedef union Foo_Data { int i; } Foo_Data; "
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
        &result);
 
   // see "make union with inline nontrivial type"
   TEST_UNSUPPORTED("make sum type with inline nontrivial type", SUM,
                    (Foo, ((typedef struct MyData{int n}, i), (char, c))),
-                   "typedef enum Foo_Kind { Foo_i, Foo_c }; typedef struct MyData{int n}; typedef "
-                   "union Foo_Data { struct MyData i; char c; };; typedef "
-                   "struct Foo { enum Foo_Kind kind; union Foo_Data data; }",
+                   "typedef enum Foo_Kind { Foo_i, Foo_c } Foo_Kind; typedef struct MyData{int n} "
+                   "MyData; typedef "
+                   "union Foo_Data { struct MyData i; char c; } Foo_Data;; typedef "
+                   "struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
                    &result);
 }
