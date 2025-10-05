@@ -144,4 +144,8 @@ int main() {
        "typedef enum Foo_Kind{Foo_i, Foo_c};", &result);
   TEST("make enum with one arg", _MAKE_ENUM, (Foo, ((int, i))), "typedef enum Foo_Kind{Foo_i};",
        &result);
+  TEST("make simple union", _MAKE_UNION, (Foo, ((int, i), (char, c))),
+       "typedef union Foo_Data { int i; char c; };", &result);
+  TEST("make union with one arg", _MAKE_UNION, (Foo, ((int, i))),
+       "typedef union Foo_Data { int i; };", &result);
 }

@@ -46,14 +46,45 @@
 #define _MAKE_ENUM(TypeName, ElementTuples)                                                        \
   typedef enum _ENUM_NAME(TypeName) { _GENERATE_ENUM_FIELDS(TypeName, ElementTuples) };
 
+// Union Generation Code
+
+#define _EXPAND_UNION_ARG_IMPL_2(ElementType, ElementName) ElementType ElementName
+#define _EXPAND_UNION_ARG_IMPL(ElementType, ElementName)                                           \
+  _EXPAND_UNION_ARG_IMPL_2(ElementType, ElementName)
+#define _EXPAND_UNION_ARG_UNWRAP(Elements) _EXPAND_UNION_ARG_IMPL(Elements)
+#define _EXPAND_UNION_ARG(ElementTuple) _EXPAND_UNION_ARG_UNWRAP(_UNWRAP(ElementTuple))
+
+#define _EXPAND_UNION_ARGS_0(ElementTuple) _EXPAND_UNION_ARG(ElementTuple);
+#define _EXPAND_UNION_ARGS_1(ElementTuple, ...)                                                    \
+  _EXPAND_UNION_ARG(ElementTuple);                                                                 \
+  _EXPAND_UNION_ARGS_0(__VA_ARGS__)
+#define _EXPAND_UNION_ARGS_2(ElementTuple, ...)                                                    \
+  _EXPAND_UNION_ARG(ElementTuple);                                                                 \
+  _EXPAND_UNION_ARGS_1(__VA_ARGS__);
+#define _EXPAND_UNION_ARGS_3(ElementTuple, ...)                                                    \
+  _EXPAND_UNION_ARG(ElementTuple);                                                                 \
+  _EXPAND_UNION_ARGS_2(__VA_ARGS__);
+
+#define _GENERATE_UNION_FIELDS_DISPATCH(Count, ...) _EXPAND_UNION_ARGS_##Count(__VA_ARGS__)
+#define _GENERATE_UNION_FIELDS_EXPAND_NARGS(Count, ...)                                            \
+  _GENERATE_UNION_FIELDS_DISPATCH(Count, __VA_ARGS__)
+#define _GENERATE_UNION_FIELDS_IMPL(...)                                                           \
+  _GENERATE_UNION_FIELDS_EXPAND_NARGS(_NARGS(__VA_ARGS__), __VA_ARGS__)
+
+#define _GENERATE_UNION_FIELDS(ElementTuples) _GENERATE_UNION_FIELDS_IMPL(_UNWRAP(ElementTuples))
+
+#define _UNION_NAME(TypeName) TypeName##_Data
+#define _MAKE_UNION(TypeName, ElementTuples)                                                       \
+  typedef union _UNION_NAME(TypeName) {                                                            \
+    _GENERATE_UNION_FIELDS(ElementTuples)                                                          \
+  };
+
 #define SUM(TypeName, ElementTuples)                                                               \
   _MAKE_ENUM(TypeName, ElementTuples)                                                              \
-  typedef union TypeName##_Data {                                                                  \
-    _EXPAND_UNION_ARGS(ElementTuples)                                                              \
-  };                                                                                               \
+  _MAKE_UNION(TypeName, ElementTuples)                                                             \
   typedef struct TypeName {                                                                        \
     enum _ENUM_NAME(TypeName) kind;                                                                \
-    union TypeName##_Data data;                                                                    \
+    union _UNION_NAME(TypeName) data;                                                              \
   }
 
 #endif
