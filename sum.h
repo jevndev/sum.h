@@ -53,7 +53,7 @@
   };                                                                                               \
   typedef struct TypeName {                                                                        \
     enum _ENUM_NAME(TypeName) kind;                                                                \
-    enum TypeName##_Data data;                                                                     \
+    union TypeName##_Data data;                                                                    \
   }
 
 #endif
