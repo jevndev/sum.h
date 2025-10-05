@@ -5,13 +5,9 @@
 
 #define STRINGIFY(...) #__VA_ARGS__
 #define STRINGIFY_EXPANDED(...) STRINGIFY(__VA_ARGS__)
-#define EXPAND_AND_STRINGIFY_OUTPUT(macro, ...)                                \
-  STRINGIFY_EXPANDED(macro __VA_ARGS__)
+#define EXPAND_AND_STRINGIFY_OUTPUT(macro, ...) STRINGIFY_EXPANDED(macro __VA_ARGS__)
 
-enum Diagnostics_Result_Kind {
-  DIAGNOSTICS_RESULT_SUCCESS,
-  DIAGNOSTICS_RESULT_MISMATCH
-};
+enum Diagnostics_Result_Kind { DIAGNOSTICS_RESULT_SUCCESS, DIAGNOSTICS_RESULT_MISMATCH };
 
 struct Diagnostics_Result_Success {};
 struct Diagnostics_Result_Mismatch {
@@ -33,8 +29,7 @@ struct Diagnostics_Result {
 
 bool is_whitespace(char c) { return c == ' ' || c == '\t' || c == '\n'; }
 
-bool matches_without_whitespace(const char *const result,
-                                const char *const expected_result,
+bool matches_without_whitespace(const char *const result, const char *const expected_result,
                                 struct Diagnostics_Result *const diagnostics) {
 
   const char *result_p = result;
@@ -49,8 +44,7 @@ bool matches_without_whitespace(const char *const result,
       expected_result_p++;
     }
 
-    if ((*result_p == '\0') != (*expected_result_p == '\0') ||
-        (*result_p != *expected_result_p)) {
+    if ((*result_p == '\0') != (*expected_result_p == '\0') || (*result_p != *expected_result_p)) {
       diagnostics->kind = DIAGNOSTICS_RESULT_MISMATCH;
 
       diagnostics->data.mismatch.result_begin = result;
@@ -68,8 +62,7 @@ bool matches_without_whitespace(const char *const result,
   return true;
 }
 
-void print_result(const char *const test_name,
-                  const struct Diagnostics_Result *const result) {
+void print_result(const char *const test_name, const struct Diagnostics_Result *const result) {
   printf("%s: ", test_name);
 
   switch (result->kind) {
@@ -147,6 +140,8 @@ void print_result(const char *const test_name,
 int main() {
   struct Diagnostics_Result result;
 
-  TEST("temporary test", SUM, (Foo, (int i), (char c)),
-       "(Foo, (int i), (char c))", &result);
+  TEST("make simple enum", _MAKE_ENUM, (Foo, ((int, i), (char, c))),
+       "typedef enum Foo_Kind{Foo_i, Foo_c};", &result);
+  TEST("make enum with one arg", _MAKE_ENUM, (Foo, ((int, i))), "typedef enum Foo_Kind{Foo_i};",
+       &result);
 }
