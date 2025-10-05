@@ -135,6 +135,11 @@ void print_result(const char *const test_name, const struct Diagnostics_Result *
     print_result(name, &result);                                               \
   } while (0)
 
+#define TEST_UNSUPPORTED(name, macro, input, expected_result, diagnostics) \
+  do { \
+    printf("%s: \033[33m[UNSUPPORTED]\033[0m\n", name); \
+  } while (0)
+
 // clang-format on
 
 int main() {
@@ -144,12 +149,51 @@ int main() {
        "typedef enum Foo_Kind{Foo_i, Foo_c};", &result);
   TEST("make enum with one arg", _MAKE_ENUM, (Foo, ((int, i))), "typedef enum Foo_Kind{Foo_i};",
        &result);
+
+  // This works, but it's kinda useless because we can't generate sum types like this
+  TEST("make enum with inline nontrivial type", _MAKE_ENUM,
+       (Foo, ((typedef struct {int n}, i), (char, c))), "typedef enum Foo_Kind{Foo_i, Foo_c};",
+       &result);
+
   TEST("make simple union", _MAKE_UNION, (Foo, ((int, i), (char, c))),
        "typedef union Foo_Data { int i; char c; };", &result);
   TEST("make union with one arg", _MAKE_UNION, (Foo, ((int, i))),
        "typedef union Foo_Data { int i; };", &result);
+
+  // TODO: make unions with inline nontrivial types supported.
+  // We'd need to be smarter about where we put the type we pass to support this.
+  //
+  // That's a lot of work
+  // Also putting typedefs out into the global scope on behalf of the user feels a little *too*
+  // magic
+  TEST_UNSUPPORTED(
+      "make union with inline nontrivial type", _MAKE_UNION,
+      (Foo, ((typedef struct MyData{int n}, i), (char, c))),
+      "typedef struct MyData{int n}; typedef union Foo_Data { struct MyData i; char c; };",
+      &result);
+
   TEST("make simple struct", _MAKE_STRUCT, (Foo, ((int, i), (char, c))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
   TEST("make struct with one arg", _MAKE_STRUCT, (Foo, ((int, i))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+  TEST("make struct with inline nontrivial type", _MAKE_STRUCT,
+       (Foo, ((typedef struct {int n}, i), (char, c))),
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+
+  TEST("make simple sum type", SUM, (Foo, ((int, i), (char, c))),
+       "typedef enum Foo_Kind { Foo_i, Foo_c }; typedef union Foo_Data { int i; char c; }; typedef "
+       "struct Foo { enum Foo_Kind kind; union Foo_Data data; }",
+       &result);
+  TEST("make sum type with one arg", SUM, (Foo, ((int, i))),
+       "typedef enum Foo_Kind { Foo_i }; typedef union Foo_Data { int i; }; typedef struct Foo { "
+       "enum Foo_Kind kind; union Foo_Data data; }",
+       &result);
+
+  // see "make union with inline nontrivial type"
+  TEST_UNSUPPORTED("make sum type with inline nontrivial type", SUM,
+                   (Foo, ((typedef struct MyData{int n}, i), (char, c))),
+                   "typedef enum Foo_Kind { Foo_i, Foo_c }; typedef struct MyData{int n}; typedef "
+                   "union Foo_Data { struct MyData i; char c; };; typedef "
+                   "struct Foo { enum Foo_Kind kind; union Foo_Data data; }",
+                   &result);
 }
