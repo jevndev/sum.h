@@ -1,7 +1,8 @@
-#include "sum.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#define SUM_H_STRIP_PREFIX
+#include "sum.h"
 
 #define STRINGIFY(...) #__VA_ARGS__
 #define STRINGIFY_EXPANDED(...) STRINGIFY(__VA_ARGS__)
@@ -145,19 +146,19 @@ void print_result(const char *const test_name, const struct Diagnostics_Result *
 int main() {
   struct Diagnostics_Result result;
 
-  TEST("make simple enum", _MAKE_ENUM, (Foo, ((int, i), (char, c))),
+  TEST("make simple enum", _SUM_H__MAKE_ENUM, (Foo, ((int, i), (char, c))),
        "typedef enum Foo_Kind{Foo_i, Foo_c};", &result);
-  TEST("make enum with one arg", _MAKE_ENUM, (Foo, ((int, i))), "typedef enum Foo_Kind{Foo_i};",
-       &result);
+  TEST("make enum with one arg", _SUM_H__MAKE_ENUM, (Foo, ((int, i))),
+       "typedef enum Foo_Kind{Foo_i};", &result);
 
   // This works, but it's kinda useless because we can't generate sum types like this
-  TEST("make enum with inline nontrivial type", _MAKE_ENUM,
+  TEST("make enum with inline nontrivial type", _SUM_H__MAKE_ENUM,
        (Foo, ((typedef struct {int n}, i), (char, c))), "typedef enum Foo_Kind{Foo_i, Foo_c};",
        &result);
 
-  TEST("make simple union", _MAKE_UNION, (Foo, ((int, i), (char, c))),
+  TEST("make simple union", _SUM_H__MAKE_UNION, (Foo, ((int, i), (char, c))),
        "typedef union Foo_Data { int i; char c; };", &result);
-  TEST("make union with one arg", _MAKE_UNION, (Foo, ((int, i))),
+  TEST("make union with one arg", _SUM_H__MAKE_UNION, (Foo, ((int, i))),
        "typedef union Foo_Data { int i; };", &result);
 
   // TODO: make unions with inline nontrivial types supported.
@@ -167,16 +168,16 @@ int main() {
   // Also putting typedefs out into the global scope on behalf of the user feels a little *too*
   // magic
   TEST_UNSUPPORTED(
-      "make union with inline nontrivial type", _MAKE_UNION,
+      "make union with inline nontrivial type", _SUM_H__MAKE_UNION,
       (Foo, ((typedef struct MyData{int n}, i), (char, c))),
       "typedef struct MyData{int n}; typedef union Foo_Data { struct MyData i; char c; };",
       &result);
 
-  TEST("make simple struct", _MAKE_STRUCT, (Foo, ((int, i), (char, c))),
+  TEST("make simple struct", _SUM_H__MAKE_STRUCT, (Foo, ((int, i), (char, c))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
-  TEST("make struct with one arg", _MAKE_STRUCT, (Foo, ((int, i))),
+  TEST("make struct with one arg", _SUM_H__MAKE_STRUCT, (Foo, ((int, i))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
-  TEST("make struct with inline nontrivial type", _MAKE_STRUCT,
+  TEST("make struct with inline nontrivial type", _SUM_H__MAKE_STRUCT,
        (Foo, ((typedef struct {int n}, i), (char, c))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
 
