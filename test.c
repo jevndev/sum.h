@@ -148,4 +148,8 @@ int main() {
        "typedef union Foo_Data { int i; char c; };", &result);
   TEST("make union with one arg", _MAKE_UNION, (Foo, ((int, i))),
        "typedef union Foo_Data { int i; };", &result);
+  TEST("make simple struct", _MAKE_STRUCT, (Foo, ((int, i), (char, c))),
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
+  TEST("make struct with one arg", _MAKE_STRUCT, (Foo, ((int, i))),
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; }", &result);
 }

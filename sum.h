@@ -79,12 +79,17 @@
     _GENERATE_UNION_FIELDS(ElementTuples)                                                          \
   };
 
-#define SUM(TypeName, ElementTuples)                                                               \
-  _MAKE_ENUM(TypeName, ElementTuples)                                                              \
-  _MAKE_UNION(TypeName, ElementTuples)                                                             \
+// Struct Generation
+
+#define _MAKE_STRUCT(TypeName, ElementTuples)                                                      \
   typedef struct TypeName {                                                                        \
     enum _ENUM_NAME(TypeName) kind;                                                                \
     union _UNION_NAME(TypeName) data;                                                              \
   }
+
+#define SUM(TypeName, ElementTuples)                                                               \
+  _MAKE_ENUM(TypeName, ElementTuples)                                                              \
+  _MAKE_UNION(TypeName, ElementTuples)                                                             \
+  _MAKE_STRUCT(TypeName, ElementTuples)
 
 #endif
