@@ -16,6 +16,8 @@
 #define _GET_NAME_IMPL(...) _GET_NAME_IMPL_2(__VA_ARGS__)
 #define _GET_NAME(Tuple) _GET_NAME_IMPL(_UNWRAP(Tuple))
 
+// Enum Generation Code
+
 #define _EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName) TypeName##_##ElementName
 #define _EXPAND_ENUM_ARG_IMPL(TypeName, ElementName) _EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName)
 #define _EXPAND_ENUM_ARG(TypeName, ElementTuple)                                                   \
@@ -39,10 +41,10 @@
 
 #define _GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                                             \
   _GENERATE_ENUM_FIELDS_IMPL(TypeName, _UNWRAP(ElementTuples))
-#define _EXPAND_UNION_ARGS(...) __VA_ARGS__
 
+#define _ENUM_NAME(TypeName) TypeName##_Kind
 #define _MAKE_ENUM(TypeName, ElementTuples)                                                        \
-  typedef enum TypeName##_Kind{_GENERATE_ENUM_FIELDS(TypeName, ElementTuples)};
+  typedef enum _ENUM_NAME(TypeName) { _GENERATE_ENUM_FIELDS(TypeName, ElementTuples) };
 
 #define SUM(TypeName, ElementTuples)                                                               \
   _MAKE_ENUM(TypeName, ElementTuples)                                                              \
@@ -50,7 +52,7 @@
     _EXPAND_UNION_ARGS(ElementTuples)                                                              \
   };                                                                                               \
   typedef struct TypeName {                                                                        \
-    enum TypeName##_Kind kind;                                                                     \
+    enum _ENUM_NAME(TypeName) kind;                                                                \
     enum TypeName##_Data data;                                                                     \
   }
 
