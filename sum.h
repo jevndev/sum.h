@@ -50,7 +50,7 @@
 #define _SUM_H__MAKE_ENUM(TypeName, ElementTuples)                                                 \
   typedef enum _SUM_H__ENUM_NAME(TypeName) {                                                       \
     _SUM_H__GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                                          \
-  };
+  } _SUM_H__ENUM_NAME(TypeName);
 
 // Union Generation Code
 
@@ -86,7 +86,7 @@
 #define _SUM_H__MAKE_UNION(TypeName, ElementTuples)                                                \
   typedef union _SUM_H__UNION_NAME(TypeName) {                                                     \
     _SUM_H__GENERATE_UNION_FIELDS(ElementTuples)                                                   \
-  };
+  } _SUM_H__UNION_NAME(TypeName);
 
 // Struct Generation
 
@@ -94,7 +94,7 @@
   typedef struct TypeName {                                                                        \
     enum _SUM_H__ENUM_NAME(TypeName) kind;                                                         \
     union _SUM_H__UNION_NAME(TypeName) data;                                                       \
-  }
+  } TypeName
 
 #define SUM_H_SUM(TypeName, ElementTuples)                                                         \
   _SUM_H__MAKE_ENUM(TypeName, ElementTuples)                                                       \
