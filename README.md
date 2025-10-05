@@ -24,6 +24,8 @@ typedef struct Foo {
 };
 ```
 
+Refer to [main.c](main.c) for an example (albeit contrived) use-case of this library.
+
 > [!WARNING]
 > This library is in its infancy. There may be breaking API changes as more features get added.
 
