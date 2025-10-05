@@ -2,8 +2,6 @@
 #define SUM_H
 
 // Utilities
-#define _SUM_H__NARGS_IMPL(ElementTuple, A1, A2, A3, N, ...) N
-#define _SUM_H__NARGS(...) _SUM_H__NARGS_IMPL(__VA_ARGS__, 3, 2, 1, 0)
 
 #define _SUM_H__UNWRAP_IMPL(...) __VA_ARGS__
 #define _SUM_H__UNWRAP(A) _SUM_H__UNWRAP_IMPL A
@@ -16,25 +14,55 @@
 #define _SUM_H__GET_NAME_IMPL(...) _SUM_H__GET_NAME_IMPL_2(__VA_ARGS__)
 #define _SUM_H__GET_NAME(Tuple) _SUM_H__GET_NAME_IMPL(_SUM_H__UNWRAP(Tuple))
 
-// Enum Generation Code
+// clang-format off
+
+// TODO: use generic expand idiom thing to make recursive
+
+#define _SUM_H__NARGS_IMPL(ElementTuple,                   A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A12, A13, A14, A15, A16, N, ...)  N
+#define _SUM_H__NARGS(...) _SUM_H__NARGS_IMPL(__VA_ARGS__, 15, 14, 13, 12, 11, 10, 9,   8,  7,   6,   5,   4,   3,   2,   1, 0)
+
+#define _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, ElementTuple)       _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple)
+#define _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_2(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_3(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_2(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_4(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_3(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_5(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_4(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_6(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_5(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_7(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_6(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_8(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_7(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_9(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_8(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_10(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_9(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_11(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_10(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_12(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_11(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_13(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_12(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_14(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_13(TypeName, __VA_ARGS__)
+#define _SUM_H__EXPAND_ENUM_ARGS_15(TypeName, ElementTuple, ...) _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_14(TypeName, __VA_ARGS__)
+
+
+#define _SUM_H__EXPAND_UNION_ARGS_0(ElementTuple)        _SUM_H__EXPAND_UNION_ARG(ElementTuple);
+#define _SUM_H__EXPAND_UNION_ARGS_1(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_0(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_2(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_1(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_3(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_2(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_4(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_3(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_5(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_4(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_6(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_5(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_7(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_6(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_8(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_7(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_9(ElementTuple, ...)   _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_8(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_10(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_9(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_11(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_10(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_12(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_11(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_13(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_12(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_14(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_13(__VA_ARGS__)
+#define _SUM_H__EXPAND_UNION_ARGS_15(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_14(__VA_ARGS__)
+
+// clang-format on
 
 #define _SUM_H__EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName) TypeName##_##ElementName
 #define _SUM_H__EXPAND_ENUM_ARG_IMPL(TypeName, ElementName)                                        \
   _SUM_H__EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName)
 #define _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple)                                            \
   _SUM_H__EXPAND_ENUM_ARG_IMPL(TypeName, _SUM_H__GET_NAME(ElementTuple))
-
-// TODO: use generic expand idiom thing to make recursive
-#define _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, ElementTuple)                                         \
-  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple)
-#define _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, ElementTuple, ...)                                    \
-  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, __VA_ARGS__)
-#define _SUM_H__EXPAND_ENUM_ARGS_2(TypeName, ElementTuple, ...)                                    \
-  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple),                                                 \
-      _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, __VA_ARGS__),
-#define _SUM_H__EXPAND_ENUM_ARGS_3(TypeName, ElementTuple, ...)                                    \
-  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple),                                                 \
-      _SUM_H__EXPAND_ENUM_ARGS_2(TypeName, __VA_ARGS__),
 
 #define _SUM_H__GENERATE_ENUM_FIELDS_DISPATCH(TypeName, Count, ...)                                \
   _SUM_H__EXPAND_ENUM_ARGS_##Count(TypeName, __VA_ARGS__)
@@ -60,17 +88,6 @@
 #define _SUM_H__EXPAND_UNION_ARG_UNWRAP(Elements) _SUM_H__EXPAND_UNION_ARG_IMPL(Elements)
 #define _SUM_H__EXPAND_UNION_ARG(ElementTuple)                                                     \
   _SUM_H__EXPAND_UNION_ARG_UNWRAP(_SUM_H__UNWRAP(ElementTuple))
-
-#define _SUM_H__EXPAND_UNION_ARGS_0(ElementTuple) _SUM_H__EXPAND_UNION_ARG(ElementTuple);
-#define _SUM_H__EXPAND_UNION_ARGS_1(ElementTuple, ...)                                             \
-  _SUM_H__EXPAND_UNION_ARG(ElementTuple);                                                          \
-  _SUM_H__EXPAND_UNION_ARGS_0(__VA_ARGS__)
-#define _SUM_H__EXPAND_UNION_ARGS_2(ElementTuple, ...)                                             \
-  _SUM_H__EXPAND_UNION_ARG(ElementTuple);                                                          \
-  _SUM_H__EXPAND_UNION_ARGS_1(__VA_ARGS__);
-#define _SUM_H__EXPAND_UNION_ARGS_3(ElementTuple, ...)                                             \
-  _SUM_H__EXPAND_UNION_ARG(ElementTuple);                                                          \
-  _SUM_H__EXPAND_UNION_ARGS_2(__VA_ARGS__);
 
 #define _SUM_H__GENERATE_UNION_FIELDS_DISPATCH(Count, ...)                                         \
   _SUM_H__EXPAND_UNION_ARGS_##Count(__VA_ARGS__)

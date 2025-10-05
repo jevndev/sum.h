@@ -155,11 +155,31 @@ int main() {
   TEST("make enum with inline nontrivial type", _SUM_H__MAKE_ENUM,
        (Foo, ((typedef struct {int n}, i), (char, c))),
        "typedef enum Foo_Kind{Foo_i, Foo_c} Foo_Kind;", &result);
+  TEST("make enum with 16 args", _SUM_H__MAKE_ENUM,
+       (Foo, ((int, a0), (char, a1), (float, a2), (double, a3), (short, a4), (long, a5),
+              (unsigned int, a6), (unsigned char, a7), (unsigned short, a8), (unsigned long, a9),
+              (signed char, a10), (long long, a11), (unsigned long long, a12), (void *, a13),
+              (size_t, a14), (bool, a15))),
+       "typedef enum Foo_Kind{Foo_a0, Foo_a1, Foo_a2, Foo_a3, Foo_a4, Foo_a5, Foo_a6, Foo_a7, "
+       "Foo_a8, Foo_a9, Foo_a10, Foo_a11, Foo_a12, Foo_a13, Foo_a14, Foo_a15} Foo_Kind;",
+       &result);
 
   TEST("make simple union", _SUM_H__MAKE_UNION, (Foo, ((int, i), (char, c))),
        "typedef union Foo_Data { int i; char c; } Foo_Data;", &result);
   TEST("make union with one arg", _SUM_H__MAKE_UNION, (Foo, ((int, i))),
        "typedef union Foo_Data { int i; } Foo_Data;", &result);
+  //  This actually expands the bool macro, hence the check for _Bool below.
+  TEST("make union with 16 args", _SUM_H__MAKE_UNION,
+       (Foo, ((int, a0), (char, a1), (float, a2), (double, a3), (short, a4), (long, a5),
+              (unsigned int, a6), (unsigned char, a7), (unsigned short, a8), (unsigned long, a9),
+              (signed char, a10), (long long, a11), (unsigned long long, a12), (void *, a13),
+              (size_t, a14), (bool, a15))),
+       "typedef union Foo_Data { int a0; char a1; float a2; double a3; short a4; long a5; unsigned "
+       "int a6; "
+       "unsigned char a7; unsigned short a8; unsigned long a9; signed char a10; long long a11; "
+       "unsigned "
+       "long long a12; void* a13; size_t a14; _Bool a15; } Foo_Data;",
+       &result);
 
   // TODO: make unions with inline nontrivial types supported.
   // We'd need to be smarter about where we put the type we pass to support this.
@@ -180,6 +200,12 @@ int main() {
   TEST("make struct with inline nontrivial type", _SUM_H__MAKE_STRUCT,
        (Foo, ((typedef struct {int n}, i), (char, c))),
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo", &result);
+  TEST("make struct with 16 args", _SUM_H__MAKE_STRUCT,
+       (Foo, ((int, a0), (char, a1), (float, a2), (double, a3), (short, a4), (long, a5),
+              (unsigned int, a6), (unsigned char, a7), (unsigned short, a8), (unsigned long, a9),
+              (signed char, a10), (long long, a11), (unsigned long long, a12), (void *, a13),
+              (size_t, a14), (bool, a15))),
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo", &result);
 
   TEST("make simple sum type", SUM, (Foo, ((int, i), (char, c))),
        "typedef enum Foo_Kind { Foo_i, Foo_c } Foo_Kind; typedef union Foo_Data { int i; char c; } "
@@ -188,6 +214,18 @@ int main() {
        &result);
   TEST("make sum type with one arg", SUM, (Foo, ((int, i))),
        "typedef enum Foo_Kind { Foo_i } Foo_Kind; typedef union Foo_Data { int i; } Foo_Data; "
+       "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
+       &result);
+  TEST("make sum with 16 args", SUM,
+       (Foo, ((int, a0), (char, a1), (float, a2), (double, a3), (short, a4), (long, a5),
+              (unsigned int, a6), (unsigned char, a7), (unsigned short, a8), (unsigned long, a9),
+              (signed char, a10), (long long, a11), (unsigned long long, a12), (void *, a13),
+              (size_t, a14), (bool, a15))),
+       "typedef enum Foo_Kind { Foo_a0, Foo_a1, Foo_a2, Foo_a3, Foo_a4, Foo_a5, Foo_a6, Foo_a7, "
+       "Foo_a8, Foo_a9, Foo_a10, Foo_a11, Foo_a12, Foo_a13, Foo_a14, Foo_a15 } Foo_Kind; "
+       "typedef union Foo_Data { int a0; char a1; float a2; double a3; short a4; long a5; "
+       "unsigned int a6; unsigned char a7; unsigned short a8; unsigned long a9; signed char a10; "
+       "long long a11; unsigned long long a12; void* a13; size_t a14; _Bool a15; } Foo_Data; "
        "typedef struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
        &result);
 
