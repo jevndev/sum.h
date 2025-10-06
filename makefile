@@ -17,8 +17,8 @@ all: $(TARGET)
 preprocess:
 	$(CC) -E $(CFLAGS) $(SRC) -o $(BUILD_DIR)/main.i
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $^ -o $@
+$(TARGET): $(SRC) sum.h
+	$(CC) $(CFLAGS) $(SRC) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
