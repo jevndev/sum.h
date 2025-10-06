@@ -13,15 +13,22 @@ SUM(Foo, ((int, i), (char, c)));
 results in this code being generated:
 
 ```c
-typedef enum Foo_Kind { Foo_i, Foo_c };
+typedef enum Foo_Kind {
+  Foo_INVALID = 0,
+  Foo_i,
+  Foo_c
+};
+
 typedef union Foo_Data {
   int i;
   char c;
 };
+
 typedef struct Foo {
   enum Foo_Kind kind;
   union Foo_Data data;
 };
+
 ```
 
 Refer to [main.c](main.c) for an example (albeit contrived) use-case of this library.
@@ -32,6 +39,13 @@ Refer to [main.c](main.c) for an example (albeit contrived) use-case of this lib
 ### Stripping prefixes
 
 This library is loosely [stb](https://github.com/nothings/stb/blob/master/)-like, especially in how it treats prefixes to avoid name collisions. However, if you find `SUM_H_SUM(...)` to be too verbose, defining `SUM_H_STRIP_PREFIX` before including `sum.h` makes the declaration into just `SUM(...)`.
+
+## Other customization points:
+
+### `SUM_H_DONT_GENERATE_INVALID_KIND_ENTRY`
+
+By default, sum.h will generate `<Type>_INVALID = 0` as the first entry in the enum. This is useful
+to detect data that hasn't been properly intialized. define `SUM_H_DONT_GENERATE_INVALID_KIND_ENTRY` to disable this functionality
 
 ## "Why did you do this that way?"
 
@@ -52,11 +66,11 @@ In the future, I intend on implementing a better dispatch system so that the num
 
 ## Missing Features
 
-- [ ] Generating INVALID/COUNT entries for enums
 - [ ] Generating "match", "contains", "get", "set" functions
 - [ ] Better dispatch system to make supporting more arguments easier
 - [ ] Maybe support structs defined within a `SUM` invocation? Would be useful for ergonomics when making return types but very difficult and magic-y. Not sure yet.
 - [ ] Add SUM_R (name pending) for defining sum types as returns of functions
+- [ ] Generating COUNT entries for enums?
 
 ## Licensing
 
