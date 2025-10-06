@@ -21,6 +21,40 @@
 #define _SUM_H__NARGS_IMPL(ElementTuple,                   A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A12, A13, A14, A15, A16, N, ...)  N
 #define _SUM_H__NARGS(...) _SUM_H__NARGS_IMPL(__VA_ARGS__, 15, 14, 13, 12, 11, 10, 9,   8,  7,   6,   5,   4,   3,   2,   1, 0)
 
+#define _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) Macro(TypeName, ElementTuple)
+
+#define _SUM_H__FOR_ELEMENT_TUPLES_0(TypeName, Macro,  ElementTuple)      _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro)
+#define _SUM_H__FOR_ELEMENT_TUPLES_1(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_0(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_2(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_1(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_3(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_2(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_4(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_3(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_5(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_4(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_6(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_5(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_7(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_6(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_8(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_7(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_9(TypeName, Macro,  ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_8(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_10(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_9(TypeName, Macro,  __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_11(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_10(TypeName, Macro, __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_12(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_11(TypeName, Macro, __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_13(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_12(TypeName, Macro, __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_14(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_13(TypeName, Macro, __VA_ARGS__)
+#define _SUM_H__FOR_ELEMENT_TUPLES_15(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_14(TypeName, Macro, __VA_ARGS__)
+
+// clang-format on
+
+#define _SUM_H__FOR_ELEMENT_TUPLES_DISPATCH(TypeName, Macro, Count, ...)                           \
+  _SUM_H__FOR_ELEMENT_TUPLES_##Count(TypeName, Macro, __VA_ARGS__)
+
+#define _SUM_H__FOR_ELEMENT_TUPLES_EXPAND_COUNT(TypeName, Macro, Count, ...)                       \
+  _SUM_H__FOR_ELEMENT_TUPLES_DISPATCH(TypeName, Macro, Count, __VA_ARGS__)
+
+// Macro takes (TypeName, ElementTuple)
+#define _SUM_H__FOR_ELEMENT_TUPLES_VAR(TypeName, Macro, ...)                                       \
+  _SUM_H__FOR_ELEMENT_TUPLES_EXPAND_COUNT(TypeName, Macro, _SUM_H__NARGS(__VA_ARGS__), __VA_ARGS__)
+
+#define _SUM_H__FOR_ELEMENT_TUPLES(TypeName, Macro, ElementTuples)                                 \
+  _SUM_H__FOR_ELEMENT_TUPLES_VAR(TypeName, Macro, _SUM_H__UNWRAP(ElementTuples))
+
 #define _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, ElementTuple)       _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple)
 #define _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_0(TypeName, __VA_ARGS__)
 #define _SUM_H__EXPAND_ENUM_ARGS_2(TypeName, ElementTuple, ...)  _SUM_H__EXPAND_ENUM_ARG(TypeName, ElementTuple), _SUM_H__EXPAND_ENUM_ARGS_1(TypeName, __VA_ARGS__)
@@ -55,8 +89,6 @@
 #define _SUM_H__EXPAND_UNION_ARGS_13(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_12(__VA_ARGS__)
 #define _SUM_H__EXPAND_UNION_ARGS_14(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_13(__VA_ARGS__)
 #define _SUM_H__EXPAND_UNION_ARGS_15(ElementTuple, ...)  _SUM_H__EXPAND_UNION_ARG(ElementTuple); _SUM_H__EXPAND_UNION_ARGS_14(__VA_ARGS__)
-
-// clang-format on
 
 #define _SUM_H__EXPAND_ENUM_ARG_IMPL_2(TypeName, ElementName) TypeName##_##ElementName
 #define _SUM_H__EXPAND_ENUM_ARG_IMPL(TypeName, ElementName)                                        \

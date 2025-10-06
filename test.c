@@ -244,4 +244,35 @@ int main() {
                    "union Foo_Data { struct MyData i; char c; } Foo_Data;; typedef "
                    "struct Foo { enum Foo_Kind kind; union Foo_Data data; } Foo",
                    &result);
+
+#define PRINT_ARGS(TypeName, ElementTuple) (Type name : TypeName, Element Tuple : ElementTuple)
+#define FOR_LOOP_TEST_WRAPPER(TypeName, ElementTuples)                                             \
+  _SUM_H__FOR_ELEMENT_TUPLES(TypeName, PRINT_ARGS, ElementTuples)
+
+  TEST("for elementtuples with simple args", FOR_LOOP_TEST_WRAPPER, (Foo, ((int, i), (char, c))),
+       "(Type name : Foo, Element Tuple : (int, i))  (Type name : Foo, Element Tuple : (char, c))",
+       &result);
+
+  TEST("for elementtuples with 16 args", FOR_LOOP_TEST_WRAPPER,
+       (Foo, ((int, a0), (char, a1), (float, a2), (double, a3), (short, a4), (long, a5),
+              (unsigned int, a6), (unsigned char, a7), (unsigned short, a8), (unsigned long, a9),
+              (signed char, a10), (long long, a11), (unsigned long long, a12), (void *, a13),
+              (size_t, a14), (bool, a15))),
+       "(Type name : Foo, Element Tuple : (int, a0))  (Type name : Foo, Element Tuple : (char, "
+       "a1))  "
+       "(Type name : Foo, Element Tuple : (float, a2))  (Type name : Foo, Element Tuple : "
+       "(double, a3))  "
+       "(Type name : Foo, Element Tuple : (short, a4))  (Type name : Foo, Element Tuple : (long, "
+       "a5))  "
+       "(Type name : Foo, Element Tuple : (unsigned int, a6))  (Type name : Foo, Element Tuple : "
+       "(unsigned char, a7))  "
+       "(Type name : Foo, Element Tuple : (unsigned short, a8))  (Type name : Foo, Element Tuple "
+       ": (unsigned long, a9))  "
+       "(Type name : Foo, Element Tuple : (signed char, a10))  (Type name : Foo, Element Tuple : "
+       "(long long, a11))  "
+       "(Type name : Foo, Element Tuple : (unsigned long long, a12))  (Type name : Foo, Element "
+       "Tuple : (void *, a13))  "
+       "(Type name : Foo, Element Tuple : (size_t, a14))  (Type name : Foo, Element Tuple : "
+       "(_Bool, a15))",
+       &result);
 }
