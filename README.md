@@ -59,15 +59,11 @@ I like the interpretation of [algebraic data types](https://en.wikipedia.org/wik
 
 ### "This only supports N fields. What if I have M > N?"
 
-Right now, you can add support for more arguments by extending the `_SUM_H__NARGS`, `_SUM_H__NARGS_IMPL`, `_SUM_H__EXPAND_ENUM_ARGS_*` and `_SUM_H__EXPAND_UNION_ARGS_*` macros.
-My main purpose for this library is for return types of functions.
-
-In the future, I intend on implementing a better dispatch system so that the number of supported fields is defined in only one place using [recursive macros](https://stackoverflow.com/a/12540675).
+Near the top of [sum.h](sum.h), there is a block which contains the implementation details for generating the code it does. It can be expanded to your needs
 
 ## Missing Features
 
 - [ ] Generating "match", "contains", "get", "set" functions
-- [ ] Better dispatch system to make supporting more arguments easier
 - [ ] Maybe support structs defined within a `SUM` invocation? Would be useful for ergonomics when making return types but very difficult and magic-y. Not sure yet.
 - [ ] Add SUM_R (name pending) for defining sum types as returns of functions
 - [ ] Generating COUNT entries for enums?

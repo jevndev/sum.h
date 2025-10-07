@@ -14,9 +14,12 @@
 #define _SUM_H__GET_NAME_IMPL(...) _SUM_H__GET_NAME_IMPL_2(__VA_ARGS__)
 #define _SUM_H__GET_NAME(Tuple) _SUM_H__GET_NAME_IMPL(_SUM_H__UNWRAP(Tuple))
 
-// clang-format off
-
 // TODO: use generic expand idiom thing to make recursive
+
+// The below block contains the code that controls how many fields this library supports. Feel free
+// to adapt it to your needs
+// =================================================================================================
+// clang-format off
 
 #define _SUM_H__NARGS_IMPL(ElementTuple,                   A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A12, A13, A14, A15, A16, N, ...)  N
 #define _SUM_H__NARGS(...) _SUM_H__NARGS_IMPL(__VA_ARGS__, 15, 14, 13, 12, 11, 10, 9,   8,  7,   6,   5,   4,   3,   2,   1, 0)
@@ -41,6 +44,7 @@
 #define _SUM_H__FOR_ELEMENT_TUPLES_15(TypeName, Macro, ElementTuple, ...) _SUM_H__FOR_ELEMENT_TUPLES_EVAL(TypeName, ElementTuple, Macro) _SUM_H__FOR_ELEMENT_TUPLES_14(TypeName, Macro, __VA_ARGS__)
 
 // clang-format on
+// =================================================================================================
 
 #define _SUM_H__FOR_ELEMENT_TUPLES_DISPATCH(TypeName, Macro, Count, ...)                           \
   _SUM_H__FOR_ELEMENT_TUPLES_##Count(TypeName, Macro, __VA_ARGS__)
