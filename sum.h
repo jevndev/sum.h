@@ -64,17 +64,10 @@
 #define _SUM_H__GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                                      \
   _SUM_H__FOR_ELEMENT_TUPLES(TypeName, _SUM_H__EXPAND_ENUM_ARG, ElementTuples)
 
-#ifdef SUM_H_DONT_GENERATE_INVALID_KIND_ENTRY
-#define _SUM_H_GENERATE_INVALID_KIND_ENTRY(TypeName)
-#else
-#define _SUM_H_GENERATE_INVALID_KIND_ENTRY(TypeName) TypeName##_INVALID = 0
-#endif
-
 #define _SUM_H__ENUM_NAME(TypeName) TypeName##_Kind
 #define _SUM_H__MAKE_ENUM(TypeName, ElementTuples)                                                 \
   typedef enum _SUM_H__ENUM_NAME(TypeName) {                                                       \
-    _SUM_H_GENERATE_INVALID_KIND_ENTRY(TypeName)                                                   \
-        _SUM_H__GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                                      \
+    TypeName##_INVALID = 0 _SUM_H__GENERATE_ENUM_FIELDS(TypeName, ElementTuples)                   \
   } _SUM_H__ENUM_NAME(TypeName);
 
 // Union Generation Code
