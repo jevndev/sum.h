@@ -98,12 +98,28 @@
   typedef struct TypeName {                                                                        \
     enum _SUM_H__ENUM_NAME(TypeName) kind;                                                         \
     union _SUM_H__UNION_NAME(TypeName) data;                                                       \
-  } TypeName
+  } TypeName;
+
+#define _SUM_H__MAKE_SETTER_IMPL(TypeName, ElementName, ElementType)                               \
+  TypeName TypeName##_set_##ElementName(const ElementType value) {                                 \
+    return (TypeName){.kind = TypeName##_##ElementName, .data.ElementName = value};                \
+  }
+
+#define _SUM_H__MAKE_SETTER_EXPAND(TypeName, ElementName, ElementType)                             \
+  _SUM_H__MAKE_SETTER_IMPL(TypeName, ElementName, ElementType)
+
+#define _SUM_H__MAKE_SETTER(TypeName, ElementTuple)                                                \
+  _SUM_H__MAKE_SETTER_EXPAND(TypeName, _SUM_H__GET_NAME(ElementTuple),                             \
+                             _SUM_H__GET_TYPE(ElementTuple))
+
+#define _SUM_H__MAKE_SETTERS(TypeName, ElementTuples)                                              \
+  _SUM_H__FOR_ELEMENT_TUPLES(TypeName, _SUM_H__MAKE_SETTER, ElementTuples)
 
 #define SUM_H_SUM(TypeName, ElementTuples)                                                         \
   _SUM_H__MAKE_ENUM(TypeName, ElementTuples)                                                       \
   _SUM_H__MAKE_UNION(TypeName, ElementTuples)                                                      \
-  _SUM_H__MAKE_STRUCT(TypeName, ElementTuples)
+  _SUM_H__MAKE_STRUCT(TypeName, ElementTuples)                                                     \
+  _SUM_H__MAKE_SETTERS(TypeName, ElementTuples)
 
 #ifdef SUM_H_STRIP_PREFIX
 #define SUM SUM_H_SUM
