@@ -1,82 +1,73 @@
-#include <malloc.h>
-#include <signal.h>
-#include <stdint.h>
+#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#define SUM_H_STRIP_PREFIX
-#include "sum.h"
+#define COMMA                     ,
+#define ARG_1( _1, ... )          _1
+#define ARG_2( _1, _2, ... )      _2
+#define ARG_3( _1, _2, _3, ... )  _3
+#define IF_DEF_MAKE_SLOT( macro ) ARG_3( macro, ARG_1( macro, ): ((ARG_2( macro, ))0) COMMA, , )
 
-typedef struct UserData {
-  const char *name;
-  size_t age;
-} UserData;
+#define GetType( T ) typeof(_Generic( (*((T* )0)), \
+  IF_DEF_MAKE_SLOT( SLOT_1 )          \
+  IF_DEF_MAKE_SLOT( SLOT_2 )          \
+  IF_DEF_MAKE_SLOT( SLOT_3 )          \
+  IF_DEF_MAKE_SLOT( SLOT_4 )          \
+  IF_DEF_MAKE_SLOT( SLOT_5 )          \
+  IF_DEF_MAKE_SLOT( SLOT_6 )          \
+  IF_DEF_MAKE_SLOT( SLOT_7 )          \
+  IF_DEF_MAKE_SLOT( SLOT_8 )          \
+  default: ((void*)0)\
+))
 
-void printUserData(const UserData data) {
-  printf("Hi %s! You're %ld years old!\n", data.name, data.age);
-}
+#define SLOT_1 int, char
+#define SLOT_2 char, float
 
-typedef struct AdminData {
-  size_t userCount;
-} AdminData;
+#define IS_A(elem, T) _Generic((elem), T: 1, default: 0)
 
-void printAdminData(const AdminData data) {
-  printf("Hi Admin! There's %ld users now!\n", data.userCount);
-}
+#define match(Instance) \
+  for(typeof(Instance)* _ref = &Instance; _ref != 0; _ref = 0)\
+    switch (Instance.kind)
 
-SUM(LoginResult, ((UserData, user_login), (AdminData, admin_login), (size_t, remaining_tries)));
+#define _current_match_type() Foo
 
-LoginResult try_submit_password(const char *const password, const size_t remaining_tries) {
-  LoginResult result;
+#define cat_impl(A, B) A##B
+#define cat(A, B) cat_impl(A, B)
 
-  if (strcmp(password, "correct-horse-battery-staple") == 0) {
-    UserData user_data = {.name = "Randall", .age = 40u};
-    result.kind = LoginResult_user_login;
-    result.data.user_login = user_data;
-    return result;
-  } else if (strcmp(password, "admin") == 0) {
-    AdminData admin_data = {.userCount = 1u};
-    result.kind = LoginResult_admin_login;
-    result.data.admin_login = admin_data;
-    return result;
-  } else {
-    result.kind = LoginResult_remaining_tries;
-    result.data.remaining_tries = remaining_tries - 1;
-    return result;
-  }
-}
+#define as(FieldType, FieldName)\
+  break;\
+  case cat(_current_match_type(), FieldType):\
+    FieldType FieldName = _ref-> _##FieldType;
 
-#define PASSWORD_BUFFER_SIZE 256
 
-int doPasswordRepl(void) {
-  size_t remaining_tries = 3;
-  char password_buffer[PASSWORD_BUFFER_SIZE * sizeof(char)];
-
-  while (remaining_tries != 0) {
-    printf("\nEnter Password (%ld remaining attempts) >", remaining_tries);
-    scanf("%s", password_buffer);
-
-    LoginResult result = try_submit_password(password_buffer, remaining_tries);
-
-    switch (result.kind) {
-    case LoginResult_user_login:
-      printUserData(result.data.user_login);
-      return 0;
-    case LoginResult_admin_login: {
-      printAdminData(result.data.admin_login);
-      return 0;
-    }
-    case LoginResult_remaining_tries: {
-      remaining_tries = result.data.remaining_tries;
-      break;
-    }
-    default:
-      // should be unreachable!
-    }
+typedef struct
+{
+  enum {
+    Fooint,
+    Foochar
+  } kind;
+  union {
+    int _int;
+    char _char;
   };
-  printf("\nToo many failed attempts! This incident will be reported\n");
-  return 1;
-}
+} Foo;
 
-int main() { return doPasswordRepl(); }
+int main()
+{
+  Foo f;
+
+  f.kind = Foochar;
+  f._int = 'a';
+
+  match(f)
+  {
+    as(int, i) {
+      printf("%d\n", i);
+    }
+    as(char, c)
+    {
+      printf("%c\n", c);
+    }
+  }
+
+  return 0;
+}
