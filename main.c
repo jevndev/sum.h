@@ -1,43 +1,36 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define COMMA                     ,
-#define ARG_1( _1, ... )          _1
-#define ARG_2( _1, _2, ... )      _2
-#define ARG_3( _1, _2, _3, ... )  _3
-#define IF_DEF_MAKE_SLOT( macro ) ARG_3( macro, ARG_1( macro, ): ((ARG_2( macro, ))0) COMMA, , )
-
-#define GetType( T ) typeof(_Generic( (*((T* )0)), \
-  IF_DEF_MAKE_SLOT( SLOT_1 )          \
-  IF_DEF_MAKE_SLOT( SLOT_2 )          \
-  IF_DEF_MAKE_SLOT( SLOT_3 )          \
-  IF_DEF_MAKE_SLOT( SLOT_4 )          \
-  IF_DEF_MAKE_SLOT( SLOT_5 )          \
-  IF_DEF_MAKE_SLOT( SLOT_6 )          \
-  IF_DEF_MAKE_SLOT( SLOT_7 )          \
-  IF_DEF_MAKE_SLOT( SLOT_8 )          \
-  default: ((void*)0)\
-))
-
-#define SLOT_1 int, char
-#define SLOT_2 char, float
-
 #define IS_A(elem, T) _Generic((elem), T: 1, default: 0)
 
 #define match(Instance) \
   for(typeof(Instance)* _ref = &Instance; _ref != 0; _ref = 0)\
     switch (Instance.kind)
 
-#define _current_match_type() Foo
-
 #define cat_impl(A, B) A##B
 #define cat(A, B) cat_impl(A, B)
 
 #define as(FieldType, FieldName)\
   break;\
-  case cat(_current_match_type(), FieldType):\
+  case GetEnumVal(*_ref, FieldType):\
     FieldType FieldName = _ref-> _##FieldType;
 
+#define declval(T) (*(T*)0)
+
+#define RESERVED 0xFFFFFFFF
+
+// Need to find a better mechanism for this. This only fails if you have two missing as's
+#define GetEnumVal(Suminst, FieldType) _Generic(Suminst,\
+  Foo: _Generic(declval(FieldType),\
+    int: Fooint,\
+    char: Foochar,\
+    default: RESERVED),\
+  Bar: _Generic(declval(FieldType),\
+    char: Barchar,\
+    float: Barfloat,\
+    default: RESERVED\
+  )\
+)
 
 typedef struct
 {
@@ -51,12 +44,54 @@ typedef struct
   };
 } Foo;
 
-int main()
+Foo set_foo_int(const int i)
 {
   Foo f;
+  f.kind = Fooint;
+  f._int = i;
+  return f;
+}
 
+Foo set_foo_char(const char value)
+{
+  Foo f;
   f.kind = Foochar;
-  f._int = 'a';
+  f._char = value;
+  return f;
+}
+
+typedef struct
+{
+  enum {
+    Barchar,
+    Barfloat
+  } kind;
+  union {
+    char _char;
+    float _float;
+  };
+} Bar;
+
+Bar set_bar_char(const char value)
+{
+  Bar inst;
+  inst.kind = Barchar;
+  inst._char = value;
+  return inst;
+}
+
+Bar set_bar_float(const float value)
+{
+  Bar inst;
+  inst.kind = Barfloat;
+  inst._float = value;
+  return inst;
+}
+
+
+int main()
+{
+  Foo f = set_foo_int(30);
 
   match(f)
   {
@@ -68,6 +103,5 @@ int main()
       printf("%c\n", c);
     }
   }
-
   return 0;
 }
