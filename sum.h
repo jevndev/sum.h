@@ -47,6 +47,11 @@
 #define _SUM_H__CAT(A, B) _SUM_H__CAT_IMPL(A, B)
 #define _SUM_H__CAT_3(A, B, C) A##B##C
 
+#define _SUM_H__UNWRAP_IMPL(...) __VA_ARGS__
+#define _SUM_H__UNWRAP(A) _SUM_H__UNWRAP_IMPL A
+#define _SUM_H__UNWRAP_DEFINITION_IMPL(Name, Fields) Name, _SUM_H__UNWRAP(Fields)
+#define _SUM_H__UNWRAP_DEFINITION(Definition) _SUM_H__UNWRAP_DEFINITION_IMPL(Definition)
+
 #define _SUM_H__GET_SUMTYPE_NAME(Name, ...) Name
 #define _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType) SumType##FieldType
 #define _SUM_H__GET_UNION_FIELD_NAME(FieldType) _##FieldType
