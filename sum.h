@@ -11,27 +11,7 @@
 #define _SUM_H__NARGS_IMPL(ElementTuple,                   A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A12, A13, A14, A15, A16,  N, ...)  N
 #define _SUM_H__NARGS(...) _SUM_H__NARGS_IMPL(__VA_ARGS__, 15, 14, 13, 12, 11, 10, 09, 08, 07,  06,  05,  04,  03,  02,  01, 00)
 
-#define _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) Macro(SumType, FieldType)
-
-#define _SUM_H__FOREACH_FIELD_00(Macro, SumType, FieldType)      _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType)
-#define _SUM_H__FOREACH_FIELD_01(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_00(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_02(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_01(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_03(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_02(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_04(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_03(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_05(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_04(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_06(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_05(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_07(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_06(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_08(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_07(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_09(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_08(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_10(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_09(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_11(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_10(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_12(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_11(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_13(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_12(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_14(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_13(Macro, SumType, __VA_ARGS__)
-#define _SUM_H__FOREACH_FIELD_15(Macro, SumType, FieldType, ...) _SUM_H__FOREACH_FIELD_EVAL(Macro, SumType, FieldType) _SUM_H__FOREACH_FIELD_14(Macro, SumType, __VA_ARGS__)
-
-
-#define _SUM_H__FOREACH_EVAL(Macro, Closure, Element, i) Macro(Closure, Element, i)
+#define _SUM_H__FOREACH_EVAL(Macro, Closure, Element, I) Macro(Closure, Element, I)
 #define _SUM_H__FOREACH_00(Macro, Closure, Element)      _SUM_H__FOREACH_EVAL(Macro, Closure, Element, 00)
 #define _SUM_H__FOREACH_01(Macro, Closure, Element, ...) _SUM_H__FOREACH_EVAL(Macro, Closure, Element, 01) _SUM_H__FOREACH_00(Macro, Closure, __VA_ARGS__)
 #define _SUM_H__FOREACH_02(Macro, Closure, Element, ...) _SUM_H__FOREACH_EVAL(Macro, Closure, Element, 02) _SUM_H__FOREACH_01(Macro, Closure, __VA_ARGS__)
@@ -62,15 +42,9 @@
 #define _SUM_H__FOREACH(Macro, Closure, ...)                                                 \
   _SUM_H__FOREACH_EXPAND_COUNT(Macro, Closure, _SUM_H__NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define _SUM_H__FOREACH_FIELD_DISPATCH(Macro, SumType, Count, ...)                            \
-  _SUM_H__FOREACH_FIELD_##Count(Macro, SumType, __VA_ARGS__)
-
-#define _SUM_H__FOREACH_FIELD_EXPAND_COUNT(Macro, SumType, Count, ...)                        \
-  _SUM_H__FOREACH_FIELD_DISPATCH(Macro, SumType, Count, __VA_ARGS__)
-
-// Macro takes (SumType, FieldType)
+// Macro takes (SumType, FieldType, I)
 #define _SUM_H__FOREACH_FIELD(Macro, SumType, ...)                                                 \
-  _SUM_H__FOREACH_FIELD_EXPAND_COUNT(Macro, SumType, _SUM_H__NARGS(__VA_ARGS__), __VA_ARGS__)
+  _SUM_H__FOREACH(Macro, SumType, __VA_ARGS__)
 
 #define _SUM_H__CAT_IMPL(A, B) A##B
 #define _SUM_H__CAT(A, B) _SUM_H__CAT_IMPL(A, B)
@@ -85,7 +59,7 @@
 #define _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType) SumType##FieldType
 #define _SUM_H__GET_UNION_FIELD_NAME(FieldType) _##FieldType
 
-#define _SUM_H__GENERATE_ENUM_FIELD(SumType, FieldType)                                            \
+#define _SUM_H__GENERATE_ENUM_FIELD(SumType, FieldType, I)                                            \
   , _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType)
 #define _SUM_H__GENERATE_ENUM(...)                                                                 \
   enum {                                                                                           \
@@ -93,14 +67,14 @@
     _SUM_H__FOREACH_FIELD(_SUM_H__GENERATE_ENUM_FIELD, __VA_ARGS__)                                \
   }
 
-#define _SUM_H__GENERATE_UNION_FIELD(SumType, FieldType)                                           \
+#define _SUM_H__GENERATE_UNION_FIELD(SumType, FieldType, I)                                           \
   FieldType _SUM_H__GET_UNION_FIELD_NAME(FieldType);
 #define _SUM_H__GENERATE_UNION(...)                                                                \
   union {                                                                                          \
     _SUM_H__FOREACH_FIELD(_SUM_H__GENERATE_UNION_FIELD, __VA_ARGS__)                               \
   }
 
-#define _SUM_H__GENERATE_SETTER(SumType, FieldType)                                                \
+#define _SUM_H__GENERATE_SETTER(SumType, FieldType, I)                                                \
   SumType _SUM_H__CAT_3(SumType, _set_, FieldType)(FieldType new_value) {                          \
     SumType inst;                                                                                  \
     inst._kind = _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType);                                  \
@@ -159,7 +133,6 @@
 #endif
 
 _SUM_H__GENERATE_SUM(_SUM_H__UNWRAP_DEFINITION(NEW_SUM))
-
 #if     !defined( _SUM_H__SLOT_1 )
 #define _SUM_H__SLOT_1
 _SUM_H__DEF_SLOT_N(01, NEW_SUM)
