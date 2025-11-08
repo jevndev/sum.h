@@ -4,48 +4,46 @@ sum.h is a header-only library for generating and using tagged unions in c
 
 ## How to use
 
-The following code:
-
 ```c
-SUM(Foo, ((int, i), (char, c)));
+// Initialize the library
+#define SUM_H_STRIP_PREFIX
+#include "sum.h"
+
+// Declare a new sum type (note the second include of sum.h after the declaration)
+#define NEW_SUM Foo, (int, char)
+#include "sum.h"
+
+int main()
+{
+  Foo f = Foo_set_int(42);
+
+  match(foo)
+  {
+    as(int, i)
+    {
+      printf("Foo int! %d\n", i);
+    }
+    as(char, c)
+    {
+      printf("Foo char! %c\n", c);
+    }
+  }
+}
 ```
-
-results in this code being generated:
-
-```c
-typedef enum Foo_Kind {
-  Foo_INVALID = 0,
-  Foo_i,
-  Foo_c
-};
-
-typedef union Foo_Data {
-  int i;
-  char c;
-};
-
-typedef struct Foo {
-  enum Foo_Kind kind;
-  union Foo_Data data;
-};
-
-```
-
-Refer to [main.c](main.c) for an example (albeit contrived) use-case of this library.
 
 > [!WARNING]
 > This library is in its infancy. There may be breaking API changes as more features get added.
 
+### Restrictions
+
+Due to the way that the library generates your data types, type names passed to it must be valid as part of an identifier. I.e. no qualifiers (`const`, `volatile`, etc.) and no pointers `*`. Just one contiguous set of letters, numbers and underscores. This can be circumvented by `typedef`-ing your types before declaring the sum type.
+
+Giving more complex types a good name is a good practice though, so until I settle on a solution for this I'm going to say this is a feature and not a bug :)
+
+
 ### Stripping prefixes
 
-This library is loosely [stb](https://github.com/nothings/stb/blob/master/)-like, especially in how it treats prefixes to avoid name collisions. However, if you find `SUM_H_SUM(...)` to be too verbose, defining `SUM_H_STRIP_PREFIX` before including `sum.h` makes the declaration into just `SUM(...)`.
-
-## Other customization points:
-
-### `SUM_H_DONT_GENERATE_INVALID_KIND_ENTRY`
-
-By default, sum.h will generate `<Type>_INVALID = 0` as the first entry in the enum. This is useful
-to detect data that hasn't been properly intialized. define `SUM_H_DONT_GENERATE_INVALID_KIND_ENTRY` to disable this functionality
+This library is loosely [stb](https://github.com/nothings/stb/blob/master/)-like, especially in how it treats prefixes to avoid name collisions. However, if you find `SUM_H_*(...)` to be too verbose, defining `SUM_H_STRIP_PREFIX` before including `sum.h` the first timemakes the declaration into just `*(...)`.
 
 ## "Why did you do this that way?"
 
@@ -62,11 +60,8 @@ I like the interpretation of [algebraic data types](https://en.wikipedia.org/wik
 Near the top of [sum.h](sum.h), there is a block which contains the implementation details for generating the code it does. It can be expanded to your needs
 
 ## Missing Features
-
-- [ ] Generating "match", "contains", "get", "set" functions
-- [ ] Maybe support structs defined within a `SUM` invocation? Would be useful for ergonomics when making return types but very difficult and magic-y. Not sure yet.
-- [ ] Add SUM_R (name pending) for defining sum types as returns of functions
-- [ ] Generating COUNT entries for enums?
+- [ ] Using a smarter mechanism for counting generated sum type slots and fields to support arbitrarily high numbers without hard-coding
+- [ ] Better protection around misuses of the api
 
 ## Licensing
 
