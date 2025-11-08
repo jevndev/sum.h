@@ -112,11 +112,11 @@
   } _SUM_H__GET_SUMTYPE_NAME(__VA_ARGS__);                                                         \
   _SUM_H__GENERATE_SETTERS(__VA_ARGS__)
 
-#define match(Instance)                                                                            \
+#define SUM_H_MATCH(Instance)                                                                            \
   for(typeof(Instance)* _ref = &Instance; _ref != 0; _ref = 0)                                     \
     switch (Instance._kind)
 
-#define as(FieldType, FieldName)                                                                   \
+#define SUM_H_AS(FieldType, FieldName)                                                                   \
   break;                                                                                           \
   case _SUM_H__GET_ENUM_VALUE(*_ref, FieldType):                                                   \
     FieldType FieldName = _ref->_data. _SUM_H__GET_UNION_FIELD_NAME(FieldType);
@@ -203,6 +203,13 @@ _SUM_H__TAGS_##N##_END\
 
 
 _SUM_H__GENERATE_DUMMY_TYPES()
+
+
+#ifdef SUM_H_STRIP_PREFIX
+#define match SUM_H_MATCH
+#define as SUM_H_AS
+
+#endif
 
 #else
 

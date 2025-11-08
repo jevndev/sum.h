@@ -1,3 +1,4 @@
+#define SUM_H_STRIP_PREFIX
 #include "sum.h"
 #include <stdio.h>
 
@@ -16,11 +17,11 @@ int main()
   {
     as(int, i)
     {
-      printf("int! %d\n", i);
+      printf("Foo int! %d\n", i);
     }
     as(char, c)
     {
-      printf("char! %c\n", c);
+      printf("Foo char! %c\n", c);
     }
   }
 
@@ -30,7 +31,11 @@ int main()
   {
     as(float, f)
     {
-      printf("float! %f\n", f);
+      printf("Bar float! %f\n", f);
+    }
+    as (int, i)
+    {
+      printf("Bar int! %d\n", i);
     }
   }
 
