@@ -47,24 +47,32 @@
 #define _SUM_H__FOREACH_UP_14(Macro, Closure, Element, ...) _SUM_H__FOREACH_EVAL(Macro, Closure, Element, 14) _SUM_H__FOREACH_UP_15(Macro, Closure, __VA_ARGS__)
 #define _SUM_H__FOREACH_UP_15(Macro, Closure, Element)      _SUM_H__FOREACH_EVAL(Macro, Closure, Element, 15)
 
+#define _SUM_H__GET_ENUM_VALUE(SumTypeInstance, FieldType)                                         \
+  _Generic((SumTypeInstance),                                                                      \
+    IF_DEF(_SUM_H__SLOT_1)(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(01, FieldType), )                 \
+    IF_DEF(_SUM_H__SLOT_2)(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(02, FieldType), )                 \
+    IF_DEF(_SUM_H__SLOT_3)(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(03, FieldType), )                 \
+    IF_DEF(_SUM_H__SLOT_4)(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(04, FieldType), )                 \
+    default: SUM_H_THIS_SHOULD_NEVER_GET_CALLED()                                                  \
+  )
+
 // clang-format on
 // =================================================================================================
 
 #define _SUM_H__FOREACH_DISPATCH(Macro, Closure, Count, DOUP, ...)                                 \
   _SUM_H__FOREACH_##DOUP##Count(Macro, Closure, __VA_ARGS__)
 
-#define _SUM_H__FOREACH_EXPAND_COUNT(Macro, Closure, Count, ...)                             \
-  _SUM_H__FOREACH_DISPATCH(Macro, Closure, Count,, __VA_ARGS__)
+#define _SUM_H__FOREACH_EXPAND_COUNT(Macro, Closure, Count, ...)                                   \
+  _SUM_H__FOREACH_DISPATCH(Macro, Closure, Count, , __VA_ARGS__)
 
 // Macro takes (Closure, Element, i)
-#define _SUM_H__FOREACH(Macro, Closure, ...)                                                 \
+#define _SUM_H__FOREACH(Macro, Closure, ...)                                                       \
   _SUM_H__FOREACH_EXPAND_COUNT(Macro, Closure, _SUM_H__NARGS(__VA_ARGS__), __VA_ARGS__)
 
+#define _SUM_H__FOREACH_EXPAND_COUNT_UP(Macro, Closure, Count, ...)                                \
+  _SUM_H__FOREACH_DISPATCH(Macro, Closure, Count, UP_, __VA_ARGS__)
 
-#define _SUM_H__FOREACH_EXPAND_COUNT_UP(Macro, Closure, Count, ...)                             \
-  _SUM_H__FOREACH_DISPATCH(Macro, Closure, Count,UP_, __VA_ARGS__)
-
-#define _SUM_H__FOREACH_UP_EXCLUSIVE(Macro, Closure, ...)                                           \
+#define _SUM_H__FOREACH_UP_EXCLUSIVE(Macro, Closure, ...)                                          \
   _SUM_H__FOREACH_EXPAND_COUNT_UP(Macro, Closure, _SUM_H__NARGS(_, __VA_ARGS__), __VA_ARGS__)
 
 #define _SUM_H__CAT_IMPL(A, B) A##B
@@ -80,22 +88,28 @@
 #define _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType) SumType##FieldType
 #define _SUM_H__GET_UNION_FIELD_NAME(FieldType) _##FieldType
 
-#define _SUM_H__GENERATE_ENUM_FIELD(SumType, FieldType, I)                                            \
+// clang-format off
+
+#define _SUM_H__GENERATE_ENUM_FIELD(SumType, FieldType, I)                                         \
   , _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType)
+
 #define _SUM_H__GENERATE_ENUM(...)                                                                 \
   enum {                                                                                           \
-    _SUM_H__CAT(_SUM_H__GET_SUMTYPE_NAME(__VA_ARGS__), 0) = 0                                      \
-    _SUM_H__FOREACH(_SUM_H__GENERATE_ENUM_FIELD, __VA_ARGS__)                                \
+    _SUM_H__CAT(_SUM_H__GET_SUMTYPE_NAME(__VA_ARGS__), 0) =0                                       \
+    _SUM_H__FOREACH(_SUM_H__GENERATE_ENUM_FIELD, __VA_ARGS__)                                      \
   }
 
-#define _SUM_H__GENERATE_UNION_FIELD(SumType, FieldType, I)                                           \
+// clang-format on
+
+
+#define _SUM_H__GENERATE_UNION_FIELD(SumType, FieldType, I)                                        \
   FieldType _SUM_H__GET_UNION_FIELD_NAME(FieldType);
 #define _SUM_H__GENERATE_UNION(...)                                                                \
   union {                                                                                          \
-    _SUM_H__FOREACH(_SUM_H__GENERATE_UNION_FIELD, __VA_ARGS__)                               \
+    _SUM_H__FOREACH(_SUM_H__GENERATE_UNION_FIELD, __VA_ARGS__)                                     \
   }
 
-#define _SUM_H__GENERATE_SETTER(SumType, FieldType, I)                                                \
+#define _SUM_H__GENERATE_SETTER(SumType, FieldType, I)                                             \
   SumType _SUM_H__CAT_3(SumType, _set_, FieldType)(FieldType new_value) {                          \
     SumType inst;                                                                                  \
     inst._kind = _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType);                                  \
@@ -112,67 +126,66 @@
   } _SUM_H__GET_SUMTYPE_NAME(__VA_ARGS__);                                                         \
   _SUM_H__GENERATE_SETTERS(__VA_ARGS__)
 
-#define SUM_H_MATCH(Instance)                                                                            \
-  for(typeof(Instance)* _ref = &Instance; _ref != 0; _ref = 0)                                     \
+#define SUM_H_MATCH(Instance)                                                                      \
+  for (typeof(Instance) *_ref = &Instance; _ref != 0; _ref = 0)                                    \
     switch (Instance._kind)
 
-#define SUM_H_AS(FieldType, FieldName)                                                                   \
+#define SUM_H_AS(FieldType, FieldName)                                                             \
   break;                                                                                           \
   case _SUM_H__GET_ENUM_VALUE(*_ref, FieldType):                                                   \
-    FieldType FieldName = _ref->_data. _SUM_H__GET_UNION_FIELD_NAME(FieldType);
+    FieldType FieldName = _ref->_data._SUM_H__GET_UNION_FIELD_NAME(FieldType);
+
+#define COMMA() ,
+#define ARG_2_(_1, _2, ...) _2
+#define ARG_2(...) ARG_2_(__VA_ARGS__)
+#define INCL(...) __VA_ARGS__
+#define OMIT(...)
+#define IF_DEF(macro) ARG_2(COMMA macro() INCL, OMIT, )
+
+#define DECLVAL(T) (*((T *)0))
+
+int SUM_H_THIS_SHOULD_NEVER_GET_CALLED() { return 0; }
 
 
-#define COMMA()               ,
-#define ARG_2_( _1, _2, ... ) _2
-#define ARG_2( ... )          ARG_2_( __VA_ARGS__ )
-#define INCL( ... )           __VA_ARGS__
-#define OMIT( ... )
-#define IF_DEF( macro )       ARG_2( COMMA macro () INCL, OMIT, )
+#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRY(N, Elem, I)                                    \
+  _SUM_H__ANON_FIELD(N, I) : _SUM_H__ANON_TAG(N, I),
 
-#define DECLVAL(T) (*((T*)0))
+#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRIES(N, ...)                                      \
+  _SUM_H__FOREACH(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRY, N, __VA_ARGS__)                     \
+  default:                                                                                         \
+    SUM_H_THIS_SHOULD_NEVER_GET_CALLED()
 
-int SUM_H_THIS_SHOULD_NEVER_GET_CALLED() {return 0;}
-
-#define _SUM_H__GET_ENUM_VALUE( SumTypeInstance, FieldType ) _Generic( (SumTypeInstance),        \
-  IF_DEF( _SUM_H__SLOT_1 )( _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(01, FieldType), ) \
-  IF_DEF( _SUM_H__SLOT_2 )( _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(02, FieldType), ) \
-  IF_DEF( _SUM_H__SLOT_3 )( _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(03, FieldType), ) \
-  IF_DEF( _SUM_H__SLOT_4 )( _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(04, FieldType), ) \
-  default: SUM_H_THIS_SHOULD_NEVER_GET_CALLED()\
-)
-
-#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRY(N, Elem, I) _SUM_H__ANON_FIELD(N, I): _SUM_H__ANON_TAG(N, I),
-
-#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRIES(N, ...)\
-    _SUM_H__FOREACH(_SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRY, N, __VA_ARGS__)\
-    default: SUM_H_THIS_SHOULD_NEVER_GET_CALLED()
-
-#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(N, FieldType)\
-  _SUM_H__SUMTYPE_ALIAS(N): _Generic(DECLVAL(FieldType),\
-  _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRIES(N, _SUM_H__SEQ)\
-)
+#define _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N(N, FieldType)                                        \
+  _SUM_H__SUMTYPE_ALIAS(N)                                                                         \
+      : _Generic(DECLVAL(FieldType),                                                               \
+            _SUM_H__GENERATE_MATCH_SUMTYPE_BODY_N_ENTRIES(N, _SUM_H__SEQ))
 
 #define _SUM_H__ANON_TAG(N, M) _SUM_H_ANON_##N##_TAG_##M
 #define _SUM_H__ANON_FIELD(N, M) _SUM_H_ANON_##N##_FIELD_##M
 
 // TODO: I don't use sumtype. Can remove
-#define _SUM_H__MAKE_TYPEDEF_IMPL(N, SumType, FieldType, I) typedef FieldType _SUM_H__ANON_FIELD(N, I);
-#define _SUM_H__MAKE_TYPEDEF_EXPAND(Expanded, FieldType, I) _SUM_H__MAKE_TYPEDEF_IMPL(Expanded, FieldType, I)
-#define _SUM_H__MAKE_TYPEDEF(Closure, Field, I) _SUM_H__MAKE_TYPEDEF_EXPAND(_SUM_H__UNWRAP(Closure), Field, I)
+#define _SUM_H__MAKE_TYPEDEF_IMPL(N, SumType, FieldType, I)                                        \
+  typedef FieldType _SUM_H__ANON_FIELD(N, I);
+#define _SUM_H__MAKE_TYPEDEF_EXPAND(Expanded, FieldType, I)                                        \
+  _SUM_H__MAKE_TYPEDEF_IMPL(Expanded, FieldType, I)
+#define _SUM_H__MAKE_TYPEDEF(Closure, Field, I)                                                    \
+  _SUM_H__MAKE_TYPEDEF_EXPAND(_SUM_H__UNWRAP(Closure), Field, I)
 
-#define _SUM_H__MAKE_SLOT_ENUM_ENTRY_IMPL(N, SumType, FieldType, I) _SUM_H__ANON_TAG(N, I) = _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType),
-#define _SUM_H__MAKE_SLOT_ENUM_ENTRY_EXPAND(Expanded, FieldType, I) _SUM_H__MAKE_SLOT_ENUM_ENTRY_IMPL(Expanded, FieldType, I)
-#define _SUM_H__MAKE_SLOT_ENUM_ENTRY(Closure, FieldType, I) _SUM_H__MAKE_SLOT_ENUM_ENTRY_EXPAND(_SUM_H__UNWRAP(Closure), FieldType, I)
-
+#define _SUM_H__MAKE_SLOT_ENUM_ENTRY_IMPL(N, SumType, FieldType, I)                                \
+  _SUM_H__ANON_TAG(N, I) = _SUM_H__GET_ENUM_FIELD_NAME(SumType, FieldType),
+#define _SUM_H__MAKE_SLOT_ENUM_ENTRY_EXPAND(Expanded, FieldType, I)                                \
+  _SUM_H__MAKE_SLOT_ENUM_ENTRY_IMPL(Expanded, FieldType, I)
+#define _SUM_H__MAKE_SLOT_ENUM_ENTRY(Closure, FieldType, I)                                        \
+  _SUM_H__MAKE_SLOT_ENUM_ENTRY_EXPAND(_SUM_H__UNWRAP(Closure), FieldType, I)
 
 #define _SUM_H__MAKE_DUMMY_SLOT_ENUM_ENTRY(Closure, FieldType, I) _SUM_H__ANON_TAG(Closure, I) = 0,
 
-#define _SUM_H__DEF_SLOT_ENUM(N, SumType, ...)\
-enum {\
-_SUM_H__FOREACH(_SUM_H__MAKE_SLOT_ENUM_ENTRY, (N, SumType), __VA_ARGS__)\
-_SUM_H__FOREACH_UP_EXCLUSIVE(_SUM_H__MAKE_DUMMY_SLOT_ENUM_ENTRY,N, __VA_ARGS__)\
-_SUM_H__TAGS_##N##_END\
-};
+#define _SUM_H__DEF_SLOT_ENUM(N, SumType, ...)                                                     \
+  enum {                                                                                           \
+    _SUM_H__FOREACH(_SUM_H__MAKE_SLOT_ENUM_ENTRY, (N, SumType), __VA_ARGS__)                       \
+        _SUM_H__FOREACH_UP_EXCLUSIVE(_SUM_H__MAKE_DUMMY_SLOT_ENUM_ENTRY, N, __VA_ARGS__)           \
+            _SUM_H__TAGS_##N##_END                                                                 \
+  };
 
 #define _SUM_H__SUMTYPE_ALIAS(N) _SUM_H_SUMTYPE_##N
 
@@ -181,29 +194,31 @@ _SUM_H__TAGS_##N##_END\
 #define _SUM_H__ITH_DUMMY_TYPE_NAME(N) _SUM_H_DUMMY_TYPE_##N
 #define _SUM_H__ITH_END_TYPE_NAME(N) _SUM_H_END_TYPE_##N
 
-#define _SUM_H__MAKE_TYPEDEF_DUMMY(N, Field, I) typedef _SUM_H__ITH_DUMMY_TYPE_NAME(I) _SUM_H__ANON_FIELD(N, I);
+#define _SUM_H__MAKE_TYPEDEF_DUMMY(N, Field, I)                                                    \
+  typedef _SUM_H__ITH_DUMMY_TYPE_NAME(I) _SUM_H__ANON_FIELD(N, I);
 
-
-#define _SUM_H__DEF_SLOT_N_IMPL(N, SumType, ...) \
-  _SUM_H__FOREACH(_SUM_H__MAKE_TYPEDEF, (N, SumType), __VA_ARGS__)\
-  _SUM_H__FOREACH_UP_EXCLUSIVE(_SUM_H__MAKE_TYPEDEF_DUMMY, N, __VA_ARGS__)\
-  _SUM_H__DEF_SLOT_ENUM(N, SumType, __VA_ARGS__)\
+#define _SUM_H__DEF_SLOT_N_IMPL(N, SumType, ...)                                                   \
+  _SUM_H__FOREACH(_SUM_H__MAKE_TYPEDEF, (N, SumType), __VA_ARGS__)                                 \
+  _SUM_H__FOREACH_UP_EXCLUSIVE(_SUM_H__MAKE_TYPEDEF_DUMMY, N, __VA_ARGS__)                         \
+  _SUM_H__DEF_SLOT_ENUM(N, SumType, __VA_ARGS__)                                                   \
   _SUM_H__DEF_ANON_SUMTYPE_ALIAS(N, SumType)
 
 #define _SUM_H__DEF_SLOT_N_EXPAND(N, Expanded) _SUM_H__DEF_SLOT_N_IMPL(N, Expanded)
-#define _SUM_H__DEF_SLOT_N(N, NewSum) _SUM_H__DEF_SLOT_N_EXPAND(N, _SUM_H__UNWRAP_DEFINITION_IMPL(NewSum))
+#define _SUM_H__DEF_SLOT_N(N, NewSum)                                                              \
+  _SUM_H__DEF_SLOT_N_EXPAND(N, _SUM_H__UNWRAP_DEFINITION_IMPL(NewSum))
 
-#define _SUM_H__DEFINE_DUMMY_TYPE(Closure, Elem, I) typedef struct {} _SUM_H__ITH_DUMMY_TYPE_NAME(I);
-#define _SUM_H__DEFINE_END_TYPE(Closure, Elem, I) typedef struct {} _SUM_H__ITH_END_TYPE_NAME(I);
+#define _SUM_H__DEFINE_DUMMY_TYPE(Closure, Elem, I)                                                \
+  typedef struct {                                                                                 \
+  } _SUM_H__ITH_DUMMY_TYPE_NAME(I);
+#define _SUM_H__DEFINE_END_TYPE(Closure, Elem, I)                                                  \
+  typedef struct {                                                                                 \
+  } _SUM_H__ITH_END_TYPE_NAME(I);
 
-
-#define _SUM_H__GENERATE_DUMMY_TYPES() \
-  _SUM_H__FOREACH(_SUM_H__DEFINE_DUMMY_TYPE, , , _SUM_H__SEQ)\
+#define _SUM_H__GENERATE_DUMMY_TYPES()                                                             \
+  _SUM_H__FOREACH(_SUM_H__DEFINE_DUMMY_TYPE, , , _SUM_H__SEQ)                                      \
   _SUM_H__FOREACH(_SUM_H__DEFINE_END_TYPE, , , _SUM_H__SEQ)
 
-
 _SUM_H__GENERATE_DUMMY_TYPES()
-
 
 #ifdef SUM_H_STRIP_PREFIX
 #define match SUM_H_MATCH
@@ -218,16 +233,16 @@ _SUM_H__GENERATE_DUMMY_TYPES()
 #endif
 
 _SUM_H__GENERATE_SUM(_SUM_H__UNWRAP_DEFINITION(NEW_SUM))
-#if     !defined( _SUM_H__SLOT_1 )
+#if !defined(_SUM_H__SLOT_1)
 #define _SUM_H__SLOT_1
 _SUM_H__DEF_SLOT_N(01, NEW_SUM)
-#elif   !defined( _SUM_H__SLOT_2 )
+#elif !defined(_SUM_H__SLOT_2)
 #define _SUM_H__SLOT_2
 _SUM_H__DEF_SLOT_N(02, NEW_SUM)
-#elif   !defined( _SUM_H__SLOT_3 )
+#elif !defined(_SUM_H__SLOT_3)
 #define _SUM_H__SLOT_3
 _SUM_H__DEF_SLOT_N(03, NEW_SUM)
-#elif   !defined( _SUM_H__SLOT_4 )
+#elif !defined(_SUM_H__SLOT_4)
 #define _SUM_H__SLOT_4
 _SUM_H__DEF_SLOT_N(04, NEW_SUM)
 #else
